@@ -9,9 +9,12 @@ function submitName(){
 		peer.on('open', function(id){
 			$.post("/r/" + room, {userAlias: name, secret: id},
 				function(data){
-					console.log("it worked");
 					console.log(data);
-					window.location.href = data;
+					for (user in data){
+						var conn = peer.connect(data[user]['secret']);
+
+					}
+					// window.location.href = "";
 				}
 			);
 		});

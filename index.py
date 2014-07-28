@@ -57,7 +57,7 @@ def enterRoom(roomid = None):
             'name':user.name,
             'secret':user.secret
             })
-    return render_template('room.html', users = room.users), 200 
+    return json.dumps(response) 
 
 
 
