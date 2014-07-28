@@ -35,7 +35,7 @@ def index():
     return render_template('index.html'), 200
 
 
-@app.route('/r/<int:roomid>')
+@app.route('/r/<roomid>')
 def enterRoom(roomid = None):
     #endpoint errors, fix later
     alias = request.args.get('userAlias')
