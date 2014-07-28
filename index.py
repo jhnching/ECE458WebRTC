@@ -3,11 +3,9 @@ from flask import request
 from flask import render_template
 import json
 app = Flask(__name__)
-rooms = []
+rooms = {}
 class Room:
-    users = []
-    def __init__(self, roomid):
-        self.roomid = roomid
+    users = {}
 
     def getUsers():
         return users
@@ -20,23 +18,13 @@ class Room:
         users.remove(user)
         return
 
-class User:
-    def __init__(self,name = "Anon", secret = ""):
-        self.secret = secret
-        self.name = name
-
-def getRoom(roomid = None):
-    for room in rooms:
-        if room.roomid == roomid:
-            return room
-    return None
 
 @app.route('/')
 def index():
     return render_template('index.html'), 200
 
-@app.route('/room.html')
-def getRoomhtml():
+@app.route('/room/<roomid>')
+def getRoomhtml(roomid = None):
     return render_template('room.html'), 200
 
 @app.route('/r/<roomid>', methods=['POST'])
@@ -47,20 +35,14 @@ def enterRoom(roomid = None):
 
     if alias == None or secret == None:
         return render_template('page_not_found.html'), 404
-    user = User(alias, secret);
-    room = getRoom(roomid)
+    room = Room()
+    rooms[roomid] = room
     if room == None :
-        room = Room(roomid)
-    room.users.append(user)
-    rooms.append(room)
+        rooms[roomid] = Room()
+    room.users[alias] = secret
+    
     #for now
-    response = []
-    for user in room.users:
-        response.append({
-            'name':user.name,
-            'secret':user.secret
-            })
-    return json.dumps(response) 
+    return "True"
 
 
 
