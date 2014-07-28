@@ -2,6 +2,8 @@ from flask import Flask
 from flask import request
 from flask import render_template
 import json
+import hashlib
+
 app = Flask(__name__)
 rooms = {}
 class Room:
@@ -30,6 +32,7 @@ def getRoomhtml(roomid = None):
 @app.route('/r/<roomid>', methods=['POST'])
 def enterRoom(roomid = None):
     #endpoint errors, fix later
+    #check names
     alias = request.form['userAlias']
     secret = request.form['secret']
 
@@ -44,6 +47,8 @@ def enterRoom(roomid = None):
     #for now
     return "True"
 
+'''@app.route('/g/')
+def getPeers():'''
 
 
 if __name__ == '__main__':
