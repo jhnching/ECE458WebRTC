@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+	<meta charset="UTF-8">
+	<head>
+		<title>ECE458 Web RTC Project</title>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
+		<script type="text/javascript" src="js/connect.js"></script>
+	</head>
+	<body>
+		<div id="container">
+			<h1>Welcome to ECE458 Web RTC File Transfers</h1>
+			<div>
+				<div id="connectUser">
+					Please enter a username and a room Id.
+					<br/>
+					Username:
+					<input type="text" id="nameInput"/>
+					<br/>
+					Room: 
+					<input type="text" id="roomInput"/>
+					<br/>
+					<input type="submit" value="Submit" onclick="submitName()"/>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
