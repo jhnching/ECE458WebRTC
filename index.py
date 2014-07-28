@@ -35,6 +35,9 @@ def getRoom(roomid = None):
 def index():
     return render_template('index.html'), 200
 
+@app.route('/room.html')
+def getRoomhtml():
+    return render_template('room.html'), 200
 
 @app.route('/r/<roomid>', methods=['POST'])
 def enterRoom(roomid = None):
