@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import request
 from flask import render_template
+import json
 app = Flask(__name__)
 rooms = []
 class Room:
@@ -21,7 +22,7 @@ class Room:
 
 class User:
     def __init__(self,name = "Anon", secret = ""):
-        self.secret = secretr
+        self.secret = secret
         self.name = name
 
 def getRoom(roomid = None):
@@ -35,11 +36,12 @@ def index():
     return render_template('index.html'), 200
 
 
-@app.route('/r/<roomid>')
+@app.route('/r/<roomid>', methods=['POST'])
 def enterRoom(roomid = None):
     #endpoint errors, fix later
-    alias = request.args.get('userAlias')
-    secret = request.args.get('secret')
+    alias = request.form['userAlias']
+    secret = request.form['secret']
+
     if alias == None or secret == None:
         return render_template('page_not_found.html'), 404
     user = User(alias, secret);
@@ -49,7 +51,13 @@ def enterRoom(roomid = None):
     room.users.append(user)
     rooms.append(room)
     #for now
-    return render_template('room.html', users = room.users), 200
+    response = []
+    for user in room.users:
+        response.append({
+            'name':user.name,
+            'secret':user.secret
+            })
+    return render_template('room.html', users = room.users), 200 
 
 
 
