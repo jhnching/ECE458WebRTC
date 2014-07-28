@@ -14,7 +14,7 @@ function submitName(){
 						var conn = peer.connect(data[user]['secret']);
 
 					}
-					// window.location.href = "";
+					window.location.href = "room.html";
 				}
 			);
 		});
