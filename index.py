@@ -3,6 +3,7 @@ from flask import request
 from flask import render_template
 import json
 import hashlib
+import copy
 
 app = Flask(__name__)
 rooms = {}
@@ -47,8 +48,12 @@ def enterRoom(roomid = None):
     #for now
     return "True"
 
-'''@app.route('/g/')
-def getPeers():'''
+@app.route('/getPeers')
+def getPeers():
+    alias = request.form['alias']
+    roomid = request.form['roomid']
+    return json.dumps(copy(room[roomid].users).pop(alias, None))
+
 
 
 if __name__ == '__main__':
