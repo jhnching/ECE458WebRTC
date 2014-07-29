@@ -12,14 +12,16 @@ function submitName(){
 		
 		peer.on('open', function(id){
 			$.post("/r/" + room, {userAlias: name, id: id},
-				function(data){ 
-					if (data){
-						console.log(data);
+				function(retVal){ 
+					if (retVal){
+						retVal = JSON.parse(retVal);
+						console.log(retVal['data']);
 						//window.location.href = "room/" + room;
-						/*for(user in data){
+						for(user in retVal['data']){
+							console.log(retVal['data'][user]);
 							console.log(user);
-							//connectToPeers(data[user]['id'], data[user]['alias']);
-						}*/
+							connectToPeers(retVal['data'][user], user);
+						}
 					}	
 				}
 			);
@@ -29,9 +31,12 @@ function submitName(){
 	}
 }
 
-function connectToPeers(id){
+function connectToPeers(id, alias){
 	var conn = peer.connect(id);
 	conn.on('open', function(){
+		conn.on('data', function(){
+			console.log("received", data);
+		});
 		conn.send(alias + " has joined the room.");
 	});
 }
