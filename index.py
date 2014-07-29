@@ -35,20 +35,22 @@ def enterRoom(roomid = None):
     #endpoint errors, fix later
     #check names
     alias = request.form['userAlias']
-    secret = request.form['secret']
+    secret = request.form['id']
 
     if alias == None or secret == None:
         return render_template('page_not_found.html'), 404
     
-    if room[roomid] == None :
+    if rooms.get(roomid, None) == None :
         rooms[roomid] = Room()
 
     room = rooms[roomid];
-    if room.user[alias] != None:
+    if room.users.get(alias, None) != None:
         return "False"
     room.users[alias] = secret
     #for now
-    return json.dumps(copy(room[roomid].users).pop(alias, None))
+    js = copy.copy(room.users)
+    js.pop(alias, None)
+    return json.dumps(js)
 
 
 @app.route('/getPeers')
