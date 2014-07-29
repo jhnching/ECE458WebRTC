@@ -44,6 +44,16 @@ function submitName(){
 								//var call = peer.call(data, window.localStream);
 								//showTheirVid(call);
 							});
+							conn.on('open', function(data){
+								console.log("connection is now open");
+								//var call = peer.call(data, window.localStream);
+								//showTheirVid(call);
+							});
+							conn.on('closse', function(data){
+								console.log("connection is now closed");
+								//var call = peer.call(data, window.localStream);
+								//showTheirVid(call);
+							});
 						});
 						peer.on('disconnect', function(){
 							disconnectPeers();
@@ -78,6 +88,19 @@ function connectToPeers(id, alias){
 		console.log("called it");
 		showTheirVid(call);
 	});
+	conn.on('data', function(data){
+		if (data['type']=='file'){
+			console.log("got a file " + data);
+			createFileSys();
+			sentdata = data;
+		}
+		console.log(data);
+		if (data == "close"){
+			disconnectPeers();
+		}
+		//var call = peer.call(data, window.localStream);
+		//showTheirVid(call);
+	});
 }
 
 function disconnectPeers(){
@@ -88,16 +111,9 @@ function disconnectPeers(){
 	theirvid.style.visibility="hidden";
 }
 
-function sendMedia(){
-	var call = peer.call($('#callto-id').val(), window.localStream);
-}
-
-function disconnectListener(){
-	conn.onineconnectionstatechange = function() { if(conn.iceConnectionState == 'disconnected') { console.log('Disconnected'); disconnectPeers(); } }
-}
 
 function showTheirVid(call){
-	disconnectListener();
+	//disconnectListener();
 	console.log("showtheirvid gets called");
 	call.on('stream', function(stream){
 		theirvid = document.getElementById("theirvid");
@@ -107,31 +123,23 @@ function showTheirVid(call){
 
 }
 
-function getPeers(){
-	$.post("/g", {userAlias: alias, room: room},
-		function(data){ 
-			for (key in data){
-				var conn = peer.connect(data[key]);		
-			}
-		}
-	);
-}
 
 
 function sendFile(f){
 	// stuck on this...
+	console.log("sending file");
 	if (conn == null){
 		return;
 	}
 	console.log(f.name);
 	var reader = new FileReader();
 	reader.onload = function(event) {
-		var content = new Int8Array(event.target.result);
+		var content = new Uint8Array(event.target.result);
 		console.log(conn);
-	    conn.send({
-	    	type:"file",
-	    	name:f.name,
-	    	data:new Blob([content], {type:f.type})
+		conn.send({
+    	type:f.type,
+    	name:f.name,
+    	data:new Blob([content], {type:f.type})
 		});
 	    console.log("File content: " + content);
 	};
@@ -149,15 +157,19 @@ function onInitFs(fs) {
     // Create a FileWriter object for our FileEntry (log.txt).
     fileEntry.createWriter(function(fileWriter) {
 
-      fileWriter.onwriteend = function(e) {
-        console.log('Write completed.');
-      };
+		fileWriter.onwriteend = function(e) {
+		console.log('Write completed.');
+		};
 
-      fileWriter.onerror = function(e) {
-        console.log('Write failed: ' + e.toString());
-      };
-
-      fileWriter.write(sentdata['data']);
+		fileWriter.onerror = function(e) {
+		console.log('Write failed: ' + e.toString());
+		};
+		var fileReader = new FileReader();
+		fileReader.onload = function() {
+		    fileWriter.write(this.result);
+		};
+		fileReader.readAsArrayBuffer(blob);
+      	
 
     }, errorHandler);
 
@@ -193,7 +205,7 @@ function errorHandler(e) {
 }
 
 function createFileSys(){
-	console.log("before the universe");
+	console.log("creating filesys");
 	navigator.webkitPersistentStorage.requestQuota(1024*1024, function(grantedBytes) {
 	  	window.webkitRequestFileSystem(PERSISTENT, grantedBytes, onInitFs, errorHandler); 
 		}, function(e) {
