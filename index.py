@@ -38,15 +38,15 @@ def enterRoom(roomid = None):
     #for now
     js = copy.copy(room.users)
     js.pop(alias, None)
-    js['state']=True
-    return json.dumps(js)
+    obj = {'state' : True, 'data' : js}
+    return json.dumps(obj)
 
 
 @app.route('/getPeers')
 def getPeers():
     alias = request.form['userAlias']
     roomid = request.form['room']
-    return json.dumps(copy(rooms[roomid].users).pop(alias, None))
+    return json.dumps(copy.copy(rooms[roomid].users).pop(alias, None))
 
 @app.route('/deleteSelf')
 def deleteSelf():
