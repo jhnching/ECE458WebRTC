@@ -35,7 +35,7 @@
 			        myvid.src = URL.createObjectURL(stream);
 			        console.log("gets here, should show video");
 			        window.localStream = stream;
-			        myvid.style.visibility="hidden";
+			        myvid.style.display="none";
 			      },
 
 			      // errorCallback
@@ -65,8 +65,8 @@
 			
 
 				<div class="pure-u-2-3" id="video-container">
-			        <video id="theirvid" autoplay style="visibility:hidden"></video>
-			        <video id="myvid" muted="true" autoplay style="visibility:hidden"></video>
+			        <video id="theirvid" autoplay style="dislpay:none"></video>
+			        <video id="myvid" muted="true" autoplay style="display:none"></video>
 		      	</div>
 
 		        <script>

@@ -3,6 +3,7 @@ var name;
 var room;
 var conn;
 var sentdata;
+var once = true;
 window.onbeforeunload = disconnectPeers;
 
 function submitName(){
@@ -18,8 +19,8 @@ function submitName(){
 			$.post("/r/" + room, {userAlias: name, id: id},
 				function(retVal){ 
 					if (retVal){
-						document.getElementById("myvid").style.visibility = "visible";
-						document.getElementById("connectUser").remove();
+						document.getElementById("myvid").style.display = "block";
+						document.getElementById("connectUser").style.display='none';
 						retVal = JSON.parse(retVal);
 						console.log(retVal['data']);
 						peer.on('call', function(call){
@@ -32,10 +33,20 @@ function submitName(){
 							console.log("setting conn");
 							conn = connect;
 							conn.on('data', function(data){
+								console.log(data);
+								if (data == "close"){
+									disconnectPeers();
+								}
 								if (data['type']!= null){
 									console.log("got a file " + data);
-									createFileSys();
-									sentdata = data;
+									//createFileSys();
+									//sentdata = data;
+									var arr = new Uint8Array(data['data']);
+									var b = new Blob([arr], {type:'application/octet-stream'});
+									var url = (window,webkitURL||window.URL).createObjectURL(b);
+									//location.href = url;
+									downloadWithName(url, data['name']);
+
 								}
 								console.log(data);
 								if (data == "close"){
@@ -49,7 +60,7 @@ function submitName(){
 								//var call = peer.call(data, window.localStream);
 								//showTheirVid(call);
 							});
-							conn.on('closse', function(data){
+							conn.on('close', function(data){
 								console.log("connection is now closed");
 								//var call = peer.call(data, window.localStream);
 								//showTheirVid(call);
@@ -103,12 +114,14 @@ function connectToPeers(id, alias){
 	});
 }
 
-function disconnectPeers(){
+function disconnectPeers(once){
 	console.log("disconecting peers");
-	conn.send("close");
+
+	if(once)conn.send("close");
+	once = false;
 	peer.disconnect();
 	theirvid = document.getElementById("theirvid");
-	theirvid.style.visibility="hidden";
+	theirvid.style.display="none";
 }
 
 
@@ -117,7 +130,7 @@ function showTheirVid(call){
 	console.log("showtheirvid gets called");
 	call.on('stream', function(stream){
 		theirvid = document.getElementById("theirvid");
-		theirvid.style.visibility="visible";
+		theirvid.style.display="block";
     	theirvid.src = URL.createObjectURL(stream);
     });
 
@@ -138,7 +151,7 @@ function sendFile(f){
 		conn.send({
     	type:f.type,
     	name:f.name,
-    	data:new Blob([reader.result], {type:f.type})
+    	data:new Blob([reader.result], {type:'application/octet-stream'})
 		});
 	    console.log("File content finished send");
 	};
@@ -148,6 +161,25 @@ function sendFile(f){
 	reader.readAsArrayBuffer(f);
 }
 
+function downloadWithName(uri, name) {
+
+    function eventFire(el, etype){
+        if (el.fireEvent) {
+            (el.fireEvent('on' + etype));
+        } else {
+            var evObj = document.createEvent('Events');
+            evObj.initEvent(etype, true, false);
+            el.dispatchEvent(evObj);
+        }
+    }
+
+    var link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    eventFire(link, "click");
+
+}
+/*
 // file stuff
 function onInitFs(fs) {
 	console.log("in onInitFS, fs is " + fs);
@@ -213,3 +245,4 @@ function createFileSys(){
 		});
 	console.log("done creating file system");
 }
+*/
