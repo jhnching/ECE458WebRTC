@@ -32,7 +32,7 @@ function submitName(){
 							console.log("setting conn");
 							conn = connect;
 							conn.on('data', function(data){
-								if (data['type']=='file'){
+								if (data['type']!= null){
 									console.log("got a file " + data);
 									createFileSys();
 									sentdata = data;
@@ -134,14 +134,13 @@ function sendFile(f){
 	console.log(f.name);
 	var reader = new FileReader();
 	reader.onload = function(event) {
-		var content = new Uint8Array(event.target.result);
 		console.log(conn);
 		conn.send({
     	type:f.type,
     	name:f.name,
-    	data:new Blob([content], {type:f.type})
+    	data:event.target.result//new Blob([event.target.result], {type:f.type})
 		});
-	    console.log("File content: " + content);
+	    console.log("File content finished send");
 	};
 	reader.onerror = function(event) {
 	    console.error("File could not be read! Code " + event.target.error.code);
@@ -164,12 +163,9 @@ function onInitFs(fs) {
 		fileWriter.onerror = function(e) {
 		console.log('Write failed: ' + e.toString());
 		};
-		var fileReader = new FileReader();
-		fileReader.onload = function() {
-		    fileWriter.write(this.result);
-		};
-		fileReader.readAsArrayBuffer(blob);
-      	
+		console.log(sentdata['data']);
+
+      	fileWriter.write(new Blob(sentdata['data'], {type:sentdata['type']}));
 
     }, errorHandler);
 
