@@ -43,15 +43,16 @@ def enterRoom(roomid = None):
     rooms[roomid] = room
     if room == None :
         rooms[roomid] = Room()
+    if room.user[alias] != None:
+        return "False"
     room.users[alias] = secret
-    
     #for now
     return "True"
 
 @app.route('/getPeers')
 def getPeers():
-    alias = request.form['alias']
-    roomid = request.form['roomid']
+    alias = request.form['userAlias']
+    roomid = request.form['room']
     return json.dumps(copy(room[roomid].users).pop(alias, None))
 
 

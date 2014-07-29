@@ -1,3 +1,4 @@
+var peer;
 function submitName(){
 	console.log("submitName function called");
 	var name = document.getElementById("nameInput").value;
@@ -5,7 +6,7 @@ function submitName(){
 	var room = document.getElementById("roomInput").value;
 
 	if(name!="" && room!=""){
-		var peer = new Peer({key: "fb6v0c1ybiseb3xr"});
+		peer = new Peer({key: "fb6v0c1ybiseb3xr"});
 		
 		peer.on('open', function(id){
 			$.post("/r/" + room, {userAlias: name, secret: id},
@@ -14,7 +15,7 @@ function submitName(){
 						console.log(room);
 						document.cookie = "alias=" + name;
 						document.cookie = "room=" + room;
-						window.location.href = "room/" + room;
+						//window.location.href = "room/" + room;
 					}	
 				}
 			);
@@ -34,14 +35,13 @@ function getPeers(){
 	var alias = getCookie("alias");
 	var room = getCookie("room");
 	console.log("my name is " + alias + " and my room is " + room);
-	/*$.post("/g/", {userAlias: alias, room: room},
+	$.post("/g", {userAlias: alias, room: room},
 		function(data){ 
-			if (data){
-				document.cookie = "alias=" + name;
-				window.location.href = "room/" + room;
-			}	
+			for (key in data){
+				var conn = peer.connect(data[key]);		
+			}
 		}
-	);*/
+	);
 }
 
 function setCookie(cname, cvalue, exdays) {
