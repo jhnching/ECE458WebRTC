@@ -19,8 +19,8 @@ function submitName(){
 			$.post("/r/" + room, {userAlias: name, id: id},
 				function(retVal){ 
 					if (retVal){
-						document.getElementById("myvid").style.display = "block";
 						document.getElementById("connectUser").style.display='none';
+						document.getElementById("myvid").style.display = "block";
 						retVal = JSON.parse(retVal);
 						console.log(retVal['data']);
 						peer.on('call', function(call){
