@@ -2,7 +2,7 @@ var peer;
 var name;
 var room;
 var conn;
-
+var sentdata;
 window.onbeforeunload = disconnectPeers;
 
 function submitName(){
@@ -29,8 +29,14 @@ function submitName(){
 
 						});
 						peer.on('connection', function(connect){
+							console.log("setting conn");
 							conn = connect;
 							conn.on('data', function(data){
+								if (data['type']=='file'){
+									console.log("got a file " + data);
+									createFileSys();
+									sentdata = data;
+								}
 								console.log(data);
 								if (data == "close"){
 									disconnectPeers();
@@ -40,9 +46,11 @@ function submitName(){
 							});
 						});
 						peer.on('disconnect', function(){
+							disconnectPeers();
 							console.log("DISCONNECTED");
 						});
 						peer.on('close', function(){
+							disconnectPeers();
 							console.log("DISCONNECTED2");
 						});
 						for(user in retVal['data']){
@@ -74,9 +82,10 @@ function connectToPeers(id, alias){
 
 function disconnectPeers(){
 	console.log("disconecting peers");
-	window.existingCall.close();
-	peer.disconnect();
 	conn.send("close");
+	peer.disconnect();
+	theirvid = document.getElementById("theirvid");
+	theirvid.style.visibility="hidden";
 }
 
 function sendMedia(){
@@ -110,22 +119,85 @@ function getPeers(){
 
 
 function sendFile(f){
+	// stuck on this...
 	if (conn == null){
 		return;
 	}
 	console.log(f.name);
 	var reader = new FileReader();
 	reader.onload = function(event) {
-	    var contents = event.target.result;
-
+		var content = new Int8Array(event.target.result);
+		console.log(conn);
 	    conn.send({
+	    	type:"file",
 	    	name:f.name,
-	    	data:new Blob([contents], {type:f.type})
+	    	data:new Blob([content], {type:f.type})
 		});
-	    console.log("File contents: " + contents);
+	    console.log("File content: " + content);
 	};
 	reader.onerror = function(event) {
 	    console.error("File could not be read! Code " + event.target.error.code);
 	};
 	reader.readAsArrayBuffer(f);
+}
+
+// file stuff
+function onInitFs(fs) {
+	console.log("in onInitFS, fs is " + fs);
+	fs.root.getFile(sentdata['name'], {create: true}, function(fileEntry) {
+
+    // Create a FileWriter object for our FileEntry (log.txt).
+    fileEntry.createWriter(function(fileWriter) {
+
+      fileWriter.onwriteend = function(e) {
+        console.log('Write completed.');
+      };
+
+      fileWriter.onerror = function(e) {
+        console.log('Write failed: ' + e.toString());
+      };
+
+      fileWriter.write(sentdata['data']);
+
+    }, errorHandler);
+
+  }, errorHandler);
+
+}
+
+function errorHandler(e) {
+  var msg = '';
+
+  switch (e.code) {
+    case FileError.QUOTA_EXCEEDED_ERR:
+      msg = 'QUOTA_EXCEEDED_ERR';
+      break;
+    case FileError.NOT_FOUND_ERR:
+      msg = 'NOT_FOUND_ERR';
+      break;
+    case FileError.SECURITY_ERR:
+      msg = 'SECURITY_ERR';
+      break;
+    case FileError.INVALID_MODIFICATION_ERR:
+      msg = 'INVALID_MODIFICATION_ERR';
+      break;
+    case FileError.INVALID_STATE_ERR:
+      msg = 'INVALID_STATE_ERR';
+      break;
+    default:
+      msg = 'Unknown Error';
+      break;
+  };
+
+  console.log('Error: ' + msg);
+}
+
+function createFileSys(){
+	console.log("before the universe");
+	navigator.webkitPersistentStorage.requestQuota(1024*1024, function(grantedBytes) {
+	  	window.webkitRequestFileSystem(PERSISTENT, grantedBytes, onInitFs, errorHandler); 
+		}, function(e) {
+	  	console.log('Error', e); 
+		});
+	console.log("done creating file system");
 }
