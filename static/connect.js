@@ -134,11 +134,11 @@ function sendFile(f){
 	console.log(f.name);
 	var reader = new FileReader();
 	reader.onload = function(event) {
-		console.log(conn);
+		console.log(reader.result);
 		conn.send({
     	type:f.type,
     	name:f.name,
-    	data:event.target.result//new Blob([event.target.result], {type:f.type})
+    	data:new Blob([reader.result], {type:f.type})
 		});
 	    console.log("File content finished send");
 	};
@@ -163,9 +163,13 @@ function onInitFs(fs) {
 		fileWriter.onerror = function(e) {
 		console.log('Write failed: ' + e.toString());
 		};
-		console.log(sentdata['data']);
+		var arr = new Uint8Array(sentdata['data']);
+		console.log(arr);
 
-      	fileWriter.write(new Blob(sentdata['data'], {type:sentdata['type']}));
+			
+		fileWriter.write(new Blob([arr], {type:sentdata['type']}));
+
+      	//new Blob(sentdata['data'], {type:sentdata['type']}));
 
     }, errorHandler);
 
