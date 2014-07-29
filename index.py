@@ -8,7 +8,8 @@ import copy
 app = Flask(__name__)
 rooms = {}
 class Room:
-    users = {}
+    def __init__(self):
+        self.users = {}
 
 @app.route('/')
 def index():
@@ -24,15 +25,13 @@ def enterRoom(roomid = None):
     #check names
     alias = request.form['userAlias']
     secret = request.form['id']
-
     if alias == None or secret == None:
         return render_template('page_not_found.html'), 404
-    
     if rooms.get(roomid, None) == None :
         rooms[roomid] = Room()
-
     room = rooms[roomid];
-    if room.users.get(alias, None) != None:
+    a = room.users.get(alias, None) 
+    if a != None:
         return json.dumps({'state':False})
     room.users[alias] = secret
     #for now
