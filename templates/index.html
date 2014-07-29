@@ -25,6 +25,7 @@
 			        myvid.src = URL.createObjectURL(stream);
 			        console.log("gets here, should show video");
 			        window.localStream = stream;
+			        myvid.style.visibility="hidden";
 			      },
 
 			      // errorCallback
@@ -55,9 +56,44 @@
 			</div>
 		</div>
 
+
 		<div class="pure-u-2-3" id="video-container">
-	        <video id="theirvid" autoplay></video>
-	        <video id="myvid" muted="true" autoplay></video>
-      </div>
-	</body>
+	        <video id="theirvid" autoplay style="visibility:hidden"></video>
+	        <video id="myvid" muted="true" autoplay style="visibility:hidden"></video>
+      	</div>
+
+        <script>
+            function handleFileSelect(evt) {
+                evt.stopPropagation();
+                evt.preventDefault();
+
+                var files = evt.dataTransfer.files; // FileList object.
+
+                // files is a FileList of File objects. List some properties.
+                var output = [];
+                for (var i = 0, f; f = files[i]; i++) {
+                	sendFile(f);
+                	
+                // file drag and drop
+                    /*output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+                        f.size, ' bytes, last modified: ',
+                        f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+                          '</li>');*/
+                //document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+                }
+            }
+
+            function handleDragOver(evt) {
+                evt.stopPropagation();
+                evt.preventDefault();
+                evt.dataTransfer.dropEffect = 'copy'; // Explicitly show this is a copy.
+            }
+
+            // Setup the dnd listeners.
+            var dropZone = document.getElementById('theirvid');
+            dropZone.addEventListener('dragover', handleDragOver, false);
+            dropZone.addEventListener('drop', handleFileSelect, false);
+        </script>
+    </body>
 </html>
+

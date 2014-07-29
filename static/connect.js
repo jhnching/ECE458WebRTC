@@ -18,6 +18,8 @@ function submitName(){
 			$.post("/r/" + room, {userAlias: name, id: id},
 				function(retVal){ 
 					if (retVal){
+						document.getElementById("myvid").style.visibility = "visible";
+						document.getElementById("container").remove();
 						retVal = JSON.parse(retVal);
 						console.log(retVal['data']);
 						peer.on('call', function(call){
@@ -29,7 +31,7 @@ function submitName(){
 						peer.on('connection', function(connect){
 							conn = connect;
 							conn.on('data', function(data){
-								console.log(data + "is here");
+								console.log(data);
 								if (data == "close"){
 									disconnectPeers();
 								}
@@ -90,6 +92,7 @@ function showTheirVid(call){
 	console.log("showtheirvid gets called");
 	call.on('stream', function(stream){
 		theirvid = document.getElementById("theirvid");
+		theirvid.style.visibility="visible";
     	theirvid.src = URL.createObjectURL(stream);
     });
 
@@ -103,4 +106,26 @@ function getPeers(){
 			}
 		}
 	);
+}
+
+
+function sendFile(f){
+	if (conn == null){
+		return;
+	}
+	console.log(f.name);
+	var reader = new FileReader();
+	reader.onload = function(event) {
+	    var contents = event.target.result;
+
+	    conn.send({
+	    	name:f.name,
+	    	data:new Blob([contents], {type:f.type})
+		});
+	    console.log("File contents: " + contents);
+	};
+	reader.onerror = function(event) {
+	    console.error("File could not be read! Code " + event.target.error.code);
+	};
+	reader.readAsArrayBuffer(f);
 }
