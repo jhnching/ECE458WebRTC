@@ -32,7 +32,9 @@ def enterRoom(roomid = None):
     room = rooms[roomid];
     a = room.users.get(alias, None) 
     if a != None:
-        return json.dumps({'state':False})
+        return json.dumps({'state':False, 'message':'Username exists'})
+    if len(room.users) >= 2:
+        return json.dumps({'state':False, 'message':'Room full'})
     room.users[alias] = secret
     #for now
     js = copy.copy(room.users)
@@ -47,10 +49,11 @@ def getPeers():
     roomid = request.form['room']
     return json.dumps(copy.copy(rooms[roomid].users).pop(alias, None))
 
-@app.route('/deleteSelf')
-def deleteSelf():
+@app.route('/deleteUserFromRoom' , methods=['POST'])
+def deleteUserFromRoom():
+    print 'in deleteUserFromRoom'
     alias = request.form['userAlias']
-    roomid = request.form['room']
+    roomid = request.form['roomid']
     room = rooms.get(roomid, None)
     if room != None:
         if room.users.pop(alias, None) != None:
