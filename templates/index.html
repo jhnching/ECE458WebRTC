@@ -1,10 +1,13 @@
 <!DOCTYPE html>
+<html>
 	<head>
 		<meta charset="UTF-8">		
 		<title>ECE458 Web RTC Project</title>
 
 		<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"></link>
-		<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" />
+		<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css" rel="stylesheet"/>
+		<!-- <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" /> -->
+		<link href="//cdnjs.cloudflare.com/ajax/libs/jquery-ui-bootstrap/0.5pre/assets/css/bootstrap.min.css" rel="Stylesheet" />
 		<!-- <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></script> -->
 
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -49,17 +52,16 @@
 		<div id="container" class="container">
 			<h1>Welcome to ECE458 Web RTC File Transfers</h1>
 			<div class="hero-unit">
-				<div id="connectUser">
-					Please enter a username and a room Id.
-					<br/>
-					Username:
-					<input type="text" id="nameInput"/>
-					<br/>
-					Room: 
-					<input type="text" id="roomInput"/>
+				<form id="connectUser">
+					<h4>Please enter a username and a room id.</h4>
+					<!-- <br/> -->
+					<label for="nameInput">Username:</label>
+					<input type="text" id="nameInput" style="height: 30px"/>
+					<label for="roomInput">Room:</label> 
+					<input type="text" id="roomInput" style="height: 30px"/>
 					<br/>
 					<button type="button" class="btn btn-primary" onclick="submitName()">Submit</button>
-				</div>
+				</form>
 			
 
 				<div class="pure-u-2-3" id="video-container">
