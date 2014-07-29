@@ -39,10 +39,11 @@ def enterRoom(roomid = None):
 
     if alias == None or secret == None:
         return render_template('page_not_found.html'), 404
-    room = Room()
-    rooms[roomid] = room
-    if room == None :
+    
+    if room[roomid] == None :
         rooms[roomid] = Room()
+
+    room = rooms[roomid];
     if room.user[alias] != None:
         return "False"
     room.users[alias] = secret
