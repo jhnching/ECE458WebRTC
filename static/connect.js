@@ -2,6 +2,9 @@ var peer;
 var name;
 var room;
 var conn;
+
+window.onbeforeunload = disconnectPeers;
+
 function submitName(){
 	console.log("submitName function called");
 	name = document.getElementById("nameInput").value;
@@ -17,17 +20,32 @@ function submitName(){
 					if (retVal){
 						retVal = JSON.parse(retVal);
 						console.log(retVal['data']);
-						//window.location.href = "room/" + room;
+						peer.on('call', function(call){
+							call.answer(window.localStream);
+							console.log("getting a call");
+							showTheirVid(call);
 
-						peer.on('connection', function(conn){
+						});
+						peer.on('connection', function(connect){
+							conn = connect;
 							conn.on('data', function(data){
-								console.log(data);
+								console.log(data + "is here");
+								if (data == "close"){
+									disconnectPeers();
+								}
+								//var call = peer.call(data, window.localStream);
+								//showTheirVid(call);
 							});
+						});
+						peer.on('disconnect', function(){
+							console.log("DISCONNECTED");
+						});
+						peer.on('close', function(){
+							console.log("DISCONNECTED2");
 						});
 						for(user in retVal['data']){
 							connectToPeers(retVal['data'][user], user);
 						}
-
 						//window.close(disconnectPeers());
 					}	
 				}
@@ -38,20 +56,42 @@ function submitName(){
 	}
 }
 
+
+
 function connectToPeers(id, alias){
 	conn = peer.connect(id);
 	console.log("trying to connect to " + id + " alias is " + alias);
 	conn.on('open', function(){
 		console.log("connection is open");
-
-		/*conn.on('disconnected', function(data){
-			console.log("disconnected, data")
-		});*/
-		conn.send(name + " has joined the room.");
+		conn.send(alias);
+		var call = peer.call(id, window.localStream);
+		console.log("called it");
+		showTheirVid(call);
 	});
 }
 
 function disconnectPeers(){
+	console.log("disconecting peers");
+	window.existingCall.close();
+	peer.disconnect();
+	conn.send("close");
+}
+
+function sendMedia(){
+	var call = peer.call($('#callto-id').val(), window.localStream);
+}
+
+function disconnectListener(){
+	conn.onineconnectionstatechange = function() { if(conn.iceConnectionState == 'disconnected') { console.log('Disconnected'); disconnectPeers(); } }
+}
+
+function showTheirVid(call){
+	disconnectListener();
+	console.log("showtheirvid gets called");
+	call.on('stream', function(stream){
+		theirvid = document.getElementById("theirvid");
+    	theirvid.src = URL.createObjectURL(stream);
+    });
 
 }
 

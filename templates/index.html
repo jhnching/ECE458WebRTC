@@ -5,7 +5,37 @@
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="http://cdn.peerjs.com/0.3/peer.js"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='connect.js') }}"></script>
+		<script type="text/javascript">
+			navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
 
+			if (navigator.getUserMedia) {
+			   	navigator.getUserMedia (
+
+			      // constraints
+			      {
+			         video: true,
+			         audio: true
+			      },
+
+			      // successCallback
+			      function(stream){
+			        // Set your video displays
+			        myvid = document.getElementById("myvid");
+			        console.log(myvid);
+			        myvid.src = URL.createObjectURL(stream);
+			        console.log("gets here, should show video");
+			        window.localStream = stream;
+			      },
+
+			      // errorCallback
+			      function(err) {
+			         console.log("The following error occured: " + err);
+			      }
+			   	);
+			} else {
+			   console.log("getUserMedia not supported");
+			}
+		</script>
 	</head>
 	<body>
 		<div id="container">
@@ -24,5 +54,10 @@
 				</div>
 			</div>
 		</div>
+
+		<div class="pure-u-2-3" id="video-container">
+	        <video id="theirvid" autoplay></video>
+	        <video id="myvid" muted="true" autoplay></video>
+      </div>
 	</body>
 </html>
