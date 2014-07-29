@@ -1,6 +1,7 @@
 var peer;
 var name;
 var room;
+var conn;
 function submitName(){
 	console.log("submitName function called");
 	name = document.getElementById("nameInput").value;
@@ -22,6 +23,8 @@ function submitName(){
 							console.log(user);
 							connectToPeers(retVal['data'][user], user);
 						}
+
+						window.close(disconnectPeers());
 					}	
 				}
 			);
@@ -32,13 +35,23 @@ function submitName(){
 }
 
 function connectToPeers(id, alias){
-	var conn = peer.connect(id);
+	conn = peer.connect(id);
+	console.log("done connecting");
 	conn.on('open', function(){
-		conn.on('data', function(){
+		console.log("connection is open");
+		conn.on('data', function(data){
 			console.log("received", data);
+		});
+
+		conn.on('disconnected', function(data){
+			console.log("disconnected, data")
 		});
 		conn.send(alias + " has joined the room.");
 	});
+}
+
+function disconnectPeers(){
+
 }
 
 function getPeers(){
