@@ -19,7 +19,7 @@ function submitName(){
 				function(retVal){ 
 					if (retVal){
 						document.getElementById("myvid").style.visibility = "visible";
-						document.getElementById("container").remove();
+						document.getElementById("connectUser").remove();
 						retVal = JSON.parse(retVal);
 						console.log(retVal['data']);
 						peer.on('call', function(call){
