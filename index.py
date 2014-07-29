@@ -47,7 +47,8 @@ def enterRoom(roomid = None):
         return "False"
     room.users[alias] = secret
     #for now
-    return "True"
+    return json.dumps(copy(room[roomid].users).pop(alias, None))
+
 
 @app.route('/getPeers')
 def getPeers():
