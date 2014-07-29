@@ -10,18 +10,6 @@ rooms = {}
 class Room:
     users = {}
 
-    def getUsers():
-        return users
-    
-    def addUser(user):
-        users.append(user)
-        return
-    
-    def removeUser(user):
-        users.remove(user)
-        return
-
-
 @app.route('/')
 def index():
     return render_template('index.html'), 200
@@ -45,11 +33,12 @@ def enterRoom(roomid = None):
 
     room = rooms[roomid];
     if room.users.get(alias, None) != None:
-        return "False"
+        return json.dumps({'state':False})
     room.users[alias] = secret
     #for now
     js = copy.copy(room.users)
     js.pop(alias, None)
+    js['state']=True
     return json.dumps(js)
 
 
@@ -57,9 +46,17 @@ def enterRoom(roomid = None):
 def getPeers():
     alias = request.form['userAlias']
     roomid = request.form['room']
-    return json.dumps(copy(room[roomid].users).pop(alias, None))
+    return json.dumps(copy(rooms[roomid].users).pop(alias, None))
 
-
+@app.route('/deleteSelf')
+def deleteSelf():
+    alias = request.form['userAlias']
+    roomid = request.form['room']
+    room = rooms.get(roomid, None)
+    if room != None:
+        if room.users.pop(alias, None) != None:
+            return json.dumps({'state':True})
+    return json.dumps({'state':False})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
