@@ -157,7 +157,7 @@ function onInitFs(fs) {
     fileEntry.createWriter(function(fileWriter) {
 
 		fileWriter.onwriteend = function(e) {
-		console.log('Write completed.');
+		location.href = fileEntry.toURL();
 		};
 
 		fileWriter.onerror = function(e) {
