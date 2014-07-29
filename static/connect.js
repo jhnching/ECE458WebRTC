@@ -18,13 +18,17 @@ function submitName(){
 						retVal = JSON.parse(retVal);
 						console.log(retVal['data']);
 						//window.location.href = "room/" + room;
+
+						peer.on('connection', function(conn){
+							conn.on('data', function(data){
+								console.log(data);
+							});
+						});
 						for(user in retVal['data']){
-							console.log(retVal['data'][user]);
-							console.log(user);
 							connectToPeers(retVal['data'][user], user);
 						}
 
-						window.close(disconnectPeers());
+						//window.close(disconnectPeers());
 					}	
 				}
 			);
@@ -36,17 +40,14 @@ function submitName(){
 
 function connectToPeers(id, alias){
 	conn = peer.connect(id);
-	console.log("done connecting");
+	console.log("trying to connect to " + id + " alias is " + alias);
 	conn.on('open', function(){
 		console.log("connection is open");
-		conn.on('data', function(data){
-			console.log("received", data);
-		});
 
-		conn.on('disconnected', function(data){
+		/*conn.on('disconnected', function(data){
 			console.log("disconnected, data")
-		});
-		conn.send(alias + " has joined the room.");
+		});*/
+		conn.send(name + " has joined the room.");
 	});
 }
 
