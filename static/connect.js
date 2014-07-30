@@ -132,6 +132,7 @@ function showTheirVid(call){
     	theirvid.src = URL.createObjectURL(stream);
     	console.log("before change to overlay");
     	document.getElementById("myvid").setAttribute("class", "overlay");
+    	document.getElementById("vidLabel").style.display="block";
     });
 
 }

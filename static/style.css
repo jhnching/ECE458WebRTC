@@ -1,9 +1,12 @@
 .overlay{
 	position:absolute;
 	z-index: 2000;
-	top:506px;
-	left: 865px;
-	width: 100px;
+	top:452px;
+	left: 800px;
+	width: 150px;
+	-moz-border-radius:6px;
+    border-radius:6px;
+    border: 1px solid #aaaaaa;
 }
 
 .leftPadding{
@@ -24,4 +27,7 @@ table tr th{
 	position: absolute;
 	top: 15%;
 	left: 25%;
+	border: 2px solid #aaaaaa;
+	-moz-border-radius:8px;
+    border-radius:8px;
 }
