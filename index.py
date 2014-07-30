@@ -51,12 +51,22 @@ def getPeers():
 
 @app.route('/deleteUserFromRoom' , methods=['POST'])
 def deleteUserFromRoom():
-    print 'in deleteUserFromRoom'
+    other = request.form['disconnectOther']
     alias = request.form['userAlias']
     roomid = request.form['roomid']
     room = rooms.get(roomid, None)
     if room != None:
-        if room.users.pop(alias, None) != None:
+        
+        self = room.users.pop(alias, None)
+        print self
+        print other
+        print room.users
+        if  self != None:
+            if other == 'true':
+                print 'here'
+                room.users.clear()
+                room.users[alias] = self
+            print room.users
             return json.dumps({'state':True})
     return json.dumps({'state':False})
 

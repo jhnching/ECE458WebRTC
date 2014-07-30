@@ -2,7 +2,6 @@ var peer;
 var name;
 var room;
 var conn;
-var connectedPeerAlias;
 var sentdata;
 window.onbeforeunload = disconnectSelf;
 
@@ -14,7 +13,14 @@ function submitName(){
 
 	if(name!="" && room!=""){
 		peer = new Peer({key: "fb6v0c1ybiseb3xr"});
-		
+		peer.on('call', function(call){
+			call.answer(window.localStream);
+			showTheirVid(call);
+		});
+		peer.on('connection', function(connect){
+			conn = connect;
+			setConnectCallbacks(conn);
+		});
 		peer.on('open', function(id){
 			$.post("/r/" + room, {userAlias: name, id: id},
 				function(retVal){ 
@@ -23,24 +29,14 @@ function submitName(){
 						if (retVal['state']){
 							document.getElementById("myvid").style.display = "block";
 							document.getElementById("connectUser").style.display='none';
-							
 							console.log(retVal['data']);
-							peer.on('call', function(call){
-								call.answer(window.localStream);
-								console.log("getting a call");
-								showTheirVid(call);
-							});
-							peer.on('connection', function(connect){
-								console.log("setting conn");
-								conn = connect;
-								connect(conn);
-							});
 							for(user in retVal['data']){
 								connectToPeers(retVal['data'][user], user);
 							}
 						}
 						else{
 							alert(retVal['message']);
+							peer.destroy();
 						}
 						//window.close(disconnectPeers());
 					}	
@@ -52,28 +48,22 @@ function submitName(){
 	}
 }
 
-function connect(conn){
-	console.log("in connect");
+function setConnectCallbacks(conn){
+	console.log("in connectcb");
 	conn.on('data', function(data){
 		console.log(data);
-		if (data == "close"){
-			disconnectPeers(connectedPeerAlias);
-		}
 		if (data['type']!= null){
 			console.log("got a file " + data);
 			//createFileSys();
 			//sentdata = data;
 			var arr = new Uint8Array(data['data']);
 			var b = new Blob([arr], {type:'application/octet-stream'});
-			var url = (window,webkitURL||window.URL).createObjectURL(b);
+			var url = (window.webkitURL||window.URL).createObjectURL(b);
 			//location.href = url;
 			downloadWithName(url, data['name']);
 
 		}
 		console.log(data);
-		if (data['alias']!= null){
-			connectedPeerAlias=data['alias'];
-		}
 		//var call = peer.call(data, window.localStream);
 		//showTheirVid(call);
 	});
@@ -84,7 +74,7 @@ function connect(conn){
 	});
 	conn.on('close', function(data){
 		console.log("connection is now closed");
-		disconnectPeers(connectedPeerAlias);
+		disconnectPeers(true);
 		//var call = peer.call(data, window.localStream);
 		//showTheirVid(call);
 	});
@@ -93,33 +83,33 @@ function connect(conn){
 function connectToPeers(id, alias){
 	conn = peer.connect(id);
 	console.log("trying to connect to " + id + " alias is " + alias);
-	connect(conn);
-	connectedPeerAlias=alias;
-	conn.send({'alias':alias});
+	setConnectCallbacks(conn);
+	//conn.send({'alias':alias});
 	var call = peer.call(id, window.localStream);
 	showTheirVid(call);
 }
 
 function disconnectSelf(){
-	disconnectPeers(name);
+	disconnectPeers(false);
 }
 
-function disconnectPeers(alias){
+function disconnectPeers(me){
 	// some ghetto shit goin' on
-	console.log("disconecting alias  " + alias);
+	console.log("disconecting alias  " + name);
 	$.post("/deleteUserFromRoom" ,
-	 {userAlias: alias, roomid:room},
+	 {userAlias: name, roomid:room, disconnectOther:me},
 	 function(ret){
 		if(ret){
 			
 		}	
 	});
-	if(alias == name)conn.send("close");
-	peer.disconnect();
+	if(!me){
+		conn.close();
+		peer.destroy();
+	}
 	theirvid = document.getElementById("theirvid");
 	theirvid.style.display="none";
 	//document.getElementById("myvid").setAttribute("class", "mainVid");
-	connectedPeerAlias="";
 }
 
 
