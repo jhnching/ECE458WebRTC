@@ -118,6 +118,7 @@ function disconnectPeers(alias){
 	peer.disconnect();
 	theirvid = document.getElementById("theirvid");
 	theirvid.style.display="none";
+	//document.getElementById("myvid").setAttribute("class", "mainVid");
 	connectedPeerAlias="";
 }
 
@@ -129,6 +130,8 @@ function showTheirVid(call){
 		theirvid = document.getElementById("theirvid");
 		theirvid.style.display="block";
     	theirvid.src = URL.createObjectURL(stream);
+    	console.log("before change to overlay");
+    	document.getElementById("myvid").setAttribute("class", "overlay");
     });
 
 }

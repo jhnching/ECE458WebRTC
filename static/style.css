@@ -1,6 +1,27 @@
 .overlay{
 	position:absolute;
 	z-index: 2000;
-	top:120px;
-	width: 200px;
+	top:506px;
+	left: 865px;
+	width: 100px;
+}
+
+.leftPadding{
+	padding-left: 10px;
+}
+
+table tr th{
+	padding-top: 10px;
+}
+
+.login {
+	position: absolute;
+	left: 37%;
+	top: 40%;
+}
+
+.mainVideo{
+	position: absolute;
+	top: 15%;
+	left: 25%;
 }

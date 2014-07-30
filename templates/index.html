@@ -9,6 +9,7 @@
 		<!-- <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/themes/smoothness/jquery-ui.css" /> -->
 		<link href="//cdnjs.cloudflare.com/ajax/libs/jquery-ui-bootstrap/0.5pre/assets/css/bootstrap.min.css" rel="Stylesheet" />
 		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"></script>
+		<link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}"></script>
 
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 		<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.0/jquery-ui.min.js"></script>
@@ -50,23 +51,30 @@
 	</head>
 	<body>
 		<div id="container" class="container">
-			<h1>Welcome to ECE458 Web RTC File Transfers</h1>
-			<div class="hero-unit">
+			<div class="login">
 				<form id="connectUser">
-					<h4>Please enter a username and a room id.</h4>
-					<!-- <br/> -->
-					<label for="nameInput">Username:</label>
-					<input type="text" id="nameInput" style="height: 30px"/>
-					<label for="roomInput">Room:</label> 
-					<input type="text" id="roomInput" style="height: 30px"/>
-					<br/>
-					<button type="button" class="btn btn-primary" onclick="submitName()">Submit</button>
+					<table>
+						<tr>
+							<th>Username:</th>
+							<th class="leftPadding"><input type="text" id="nameInput" style="height: 30px; margin: auto"/></th>
+						</tr>
+						<tr>
+							<th>Room:</th>
+							<th class="leftPadding"><input type="text" id="roomInput" style="height: 30px; margin: auto"/></th>
+						</tr>
+					</table>
+					<!-- <div>
+						<label for="nameInput">Username:</label>
+						<input type="text" id="nameInput" style="height: 30px"/>
+					</div>
+					<div>
+						<label for="roomInput">Room:</label> 
+						<input type="text" id="roomInput" style="height: 30px"/>
+					</div> -->
+					<br />
+					<button type="button" class="btn btn-primary" onclick="submitName()" style="color:#cccccc">Submit</button>
 				</form>
 			
-
-		        <video id="myvid" muted="true" autoplay style="display:none"></video>
-		        <video id="theirvid" autoplay style="dislpay:none"></video>
-
 		        <script>
 		            function handleFileSelect(evt) {
 		                evt.stopPropagation();
@@ -100,6 +108,8 @@
 		            dropZone.addEventListener('drop', handleFileSelect, false);
 		        </script>
 	        </div>
+	        <video id="myvid" class="mainVideo" muted="true" autoplay style="display:none"></video>
+		    <video id="theirvid" class="mainVideo" autoplay style="display:none"></video>	
         </div>
     </body>
 </html>
