@@ -29,6 +29,7 @@ table tr th{
 	/*left: 25%;*/
 	top: 100px;
 	left: 320px;
+	width: 650px;
 	border: 2px solid #aaaaaa;
 	-moz-border-radius:8px;
     border-radius:8px;
