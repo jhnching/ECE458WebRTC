@@ -64,19 +64,13 @@ function setConnectCallbacks(conn){
 
 		}
 		console.log(data);
-		//var call = peer.call(data, window.localStream);
-		//showTheirVid(call);
 	});
 	conn.on('open', function(data){
 		console.log("connection is now open");
-		//var call = peer.call(data, window.localStream);
-		//showTheirVid(call);
 	});
 	conn.on('close', function(data){
 		console.log("connection is now closed");
 		disconnectPeers(true);
-		//var call = peer.call(data, window.localStream);
-		//showTheirVid(call);
 	});
 }
 
@@ -96,22 +90,22 @@ function disconnectSelf(){
 function disconnectPeers(me){
 	// some ghetto shit goin' on
 	console.log("disconecting alias  " + name);
-	$.post("/deleteUserFromRoom" ,
-	 {userAlias: name, roomid:room, disconnectOther:me},
-	 function(ret){
-		if(ret){
+	$.post("/deleteUserFromRoom" ,{userAlias: name, roomid:room, disconnectOther:me},
+		function(ret){
+			if(ret){
 			
-		}	
-	});
+			}	
+		}
+	);
 	if(!me){
 		conn.close();
 		peer.destroy();
 	}
 	theirvid = document.getElementById("theirvid");
 	theirvid.style.display="none";
-	//document.getElementById("myvid").setAttribute("class", "mainVid");
+	document.getElementById("myvid").setAttribute("class", "mainVideo");
+	document.getElementById("vidLabel").style.display="none";
 }
-
 
 function showTheirVid(call){
 	//disconnectListener();
@@ -126,8 +120,6 @@ function showTheirVid(call){
     });
 
 }
-
-
 
 function sendFile(f){
 	// stuck on this...
@@ -153,7 +145,6 @@ function sendFile(f){
 }
 
 function downloadWithName(uri, name) {
-
     function eventFire(el, etype){
         if (el.fireEvent) {
             (el.fireEvent('on' + etype));
@@ -170,70 +161,3 @@ function downloadWithName(uri, name) {
     eventFire(link, "click");
 
 }
-/*
-// file stuff
-function onInitFs(fs) {
-	console.log("in onInitFS, fs is " + fs);
-	fs.root.getFile(sentdata['name'], {create: true}, function(fileEntry) {
-
-    // Create a FileWriter object for our FileEntry (log.txt).
-    fileEntry.createWriter(function(fileWriter) {
-
-		fileWriter.onwriteend = function(e) {
-		location.href = fileEntry.toURL();
-		};
-
-		fileWriter.onerror = function(e) {
-		console.log('Write failed: ' + e.toString());
-		};
-		var arr = new Uint8Array(sentdata['data']);
-		console.log(arr);
-
-			
-		fileWriter.write(new Blob([arr], {type:sentdata['type']}));
-
-      	//new Blob(sentdata['data'], {type:sentdata['type']}));
-
-    }, errorHandler);
-
-  }, errorHandler);
-
-}
-
-function errorHandler(e) {
-  var msg = '';
-
-  switch (e.code) {
-    case FileError.QUOTA_EXCEEDED_ERR:
-      msg = 'QUOTA_EXCEEDED_ERR';
-      break;
-    case FileError.NOT_FOUND_ERR:
-      msg = 'NOT_FOUND_ERR';
-      break;
-    case FileError.SECURITY_ERR:
-      msg = 'SECURITY_ERR';
-      break;
-    case FileError.INVALID_MODIFICATION_ERR:
-      msg = 'INVALID_MODIFICATION_ERR';
-      break;
-    case FileError.INVALID_STATE_ERR:
-      msg = 'INVALID_STATE_ERR';
-      break;
-    default:
-      msg = 'Unknown Error';
-      break;
-  };
-
-  console.log('Error: ' + msg);
-}
-
-function createFileSys(){
-	console.log("creating filesys");
-	navigator.webkitPersistentStorage.requestQuota(1024*1024, function(grantedBytes) {
-	  	window.webkitRequestFileSystem(PERSISTENT, grantedBytes, onInitFs, errorHandler); 
-		}, function(e) {
-	  	console.log('Error', e); 
-		});
-	console.log("done creating file system");
-}
-*/
